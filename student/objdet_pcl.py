@@ -157,11 +157,13 @@ def bev_from_pcl(lidar_pcl, configs):
     ##          make sure that the intensity is scaled in such a way that objects of interest (e.g. vehicles) are clearly visible    
     ##          also, make sure that the influence of outliers is mitigated by normalizing intensity on the difference between the max. and min. value within the point cloud
     intensity_map[np.int_(lidar_top_pcl[:, 0]), np.int_(lidar_top_pcl[:, 1])] = lidar_top_pcl[:, 3]
-    intensity_map = 255 * intensity_map / (np.percentile(intensity_map, 99) - np.percentile(intensity_map, 1))
-    intensity_map = intensity_map.astype(np.uint8)
+    intensity_map = intensity_map / (np.percentile(intensity_map, 99) - np.percentile(intensity_map, 1))
+    intensity_map = np.clip(intensity_map, 0.0, 1.0)
+    img_intensity = 255 * intensity_map
+    img_intensity = img_intensity.astype(np.uint8)
 
     ## step 5 : temporarily visualize the intensity map using OpenCV to make sure that vehicles separate well from the background
-    cv2.imshow('intensity_map', intensity_map)
+    cv2.imshow('img_intensity', img_intensity)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
@@ -181,11 +183,12 @@ def bev_from_pcl(lidar_pcl, configs):
     ##          make sure that each entry is normalized on the difference between the upper and lower height defined in the config file
     ##          use the lidar_pcl_top data structure from the previous task to access the pixels of the height_map
     height_map[np.int_(lidar_top_pcl[:, 0]), np.int_(lidar_top_pcl[:, 1])] = lidar_top_pcl[:, 2] / (configs.lim_z[1] - configs.lim_z[0])
-    height_map = 255 * height_map
-    height_map = height_map.astype(np.uint8)
+    height_map = np.clip(height_map, 0.0, 1.0)
+    img_height = 255 * height_map
+    img_height = img_height.astype(np.uint8)
 
     ## step 3 : temporarily visualize the intensity map using OpenCV to make sure that vehicles separate well from the background
-    cv2.imshow('height_map', height_map)
+    cv2.imshow('img_height', img_height)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     #######
