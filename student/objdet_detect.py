@@ -65,7 +65,7 @@ def load_configs_model(model_name='darknet', configs=None):
         configs.model_path = os.path.join(parent_path, 'tools', 'objdet_models', 'resnet')
         configs.pretrained_filename = os.path.join(configs.model_path, 'pretrained', 'fpn_resnet_18_epoch_300.pth')
         configs.saved_fn = 'fpn_resnet_18'
-        configs.arch = 'fpn_resnet_18'
+        configs.arch = 'fpn_resnet'
         configs.K = 50
         configs.gpu_idx = 0
         configs.num_samples = None
@@ -215,8 +215,11 @@ def detect_objects(input_bev_maps, model, configs):
             detections = decode(outputs['hm_cen'], outputs['cen_offset'], outputs['direction'], outputs['z_coor'],
                                 outputs['dim'], K=configs.K)
             detections = detections.cpu().numpy().astype(np.float32)
-            detections = post_processing(detections, configs)
-            print(detections)
+            result = []
+            for detection in post_processing(detections, configs):
+                if 1 in detection:
+                    result.append([1] + list(detection[1][0])[1:])
+            detections = result
 
             #######
             ####### ID_S3_EX1-5 END #######     
@@ -230,15 +233,26 @@ def detect_objects(input_bev_maps, model, configs):
     objects = [] 
 
     ## step 1 : check whether there are any detections
+    if len(detections) > 0:
 
         ## step 2 : loop over all detections
-        
+        for detection in detections:
             ## step 3 : perform the conversion using the limits for x, y and z set in the configs structure
-        
+            cls, x, y, z, h, w, l, yaw = detection
+            bev_discret = (configs.lim_x[1] - configs.lim_x[0]) / configs.bev_height
+            x = x * bev_discret
+            y = (y - (configs.bev_width + 1) / 2) * bev_discret
+            z = z * (configs.lim_z[1] - configs.lim_z[0]) + configs.lim_z[0]
+            h = h * (configs.lim_z[1] - configs.lim_z[0])
+            w = w * bev_discret
+            l = l * bev_discret
+            yaw = -yaw
+            
             ## step 4 : append the current object to the 'objects' array
+            objects.append([cls, x, y, z, h, w, l, yaw])
         
     #######
-    ####### ID_S3_EX2 START #######   
+    ####### ID_S3_EX2 END #######   
     
     return objects    
 
