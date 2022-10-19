@@ -15,6 +15,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('wxagg') # change backend so that figure maximizing works on Mac as well     
 import matplotlib.pyplot as plt
+import pdb
 
 import torch
 from shapely.geometry import Polygon
@@ -49,16 +50,29 @@ def measure_detection_performance(detections, labels, labels_valid, min_iou=0.5)
             print("student task ID_S4_EX1 ")
 
             ## step 1 : extract the four corners of the current label bounding-box
+            label_corners = tools.compute_box_corners(label.box.center_x, label.box.center_y, label.box.width, label.box.length, label.box.heading)
             
             ## step 2 : loop over all detected objects
+            for detection in detections:
 
                 ## step 3 : extract the four corners of the current detection
-                
+                cls, x, y, z, h, w, l, yaw = detection
+                detection_corners = tools.compute_box_corners(x, y, w, l, yaw)
+
                 ## step 4 : computer the center distance between label and detection bounding-box in x, y, and z
+                dist_x = abs(x - label.box.center_x)
+                dist_y = abs(y - label.box.center_y)
+                dist_z = abs(z - label.box.center_z)
                 
                 ## step 5 : compute the intersection over union (IOU) between label and detection bounding-box
+                label_polygon = Polygon(label_corners)
+                detection_polygon = Polygon(label_corners)
+                iou = label_polygon.intersection(detection_polygon).area / label_polygon.union(detection_polygon).area
                 
                 ## step 6 : if IOU exceeds min_iou threshold, store [iou,dist_x, dist_y, dist_z] in matches_lab_det and increase the TP count
+                if iou > min_iou:
+                    matches_lab_det.append([iou, dist_x, dist_y, dist_z])
+                    true_positives += 1
                 
             #######
             ####### ID_S4_EX1 END #######     
