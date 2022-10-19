@@ -239,6 +239,7 @@ def detect_objects(input_bev_maps, model, configs):
         for detection in detections:
             ## step 3 : perform the conversion using the limits for x, y and z set in the configs structure
             cls, x, y, z, h, w, l, yaw = detection
+            x, y = y, x
             bev_discret = (configs.lim_x[1] - configs.lim_x[0]) / configs.bev_height
             x = x * bev_discret
             y = (y - (configs.bev_width + 1) / 2) * bev_discret
