@@ -38,8 +38,11 @@ class Association:
         # - update list of unassigned measurements and unassigned tracks
         ############
         
-        # the following only works for at most one track and one measurement
-        self.association_matrix = np.matrix([]) # reset matrix
+        self.association_matrix = np.zeros((len(track_list), len(meas_list)))
+        for i in range(len(track_list)):
+            for j in range(len(meas_list)):
+                self.association_matrix[i,j] = self.MHD(track_list[i], meas_list[j], KF)
+        # TODO(tetsui): Update here before submission
         self.unassigned_tracks = [] # reset lists
         self.unassigned_meas = []
         
@@ -82,7 +85,7 @@ class Association:
         # TODO Step 3: return True if measurement lies inside gate, otherwise False
         ############
         
-        pass    
+        return MHD < chi2.ppf(params.gating_threshold, len(sensor.dim_meas))
         
         ############
         # END student code
@@ -93,7 +96,10 @@ class Association:
         # TODO Step 3: calculate and return Mahalanobis distance
         ############
         
-        pass
+        H = meas.sensor.get_H(track.x)
+        gamma = KF.gamma(track, meas)
+        S = KF.S(track, meas, H)
+        return gamma.transpose() * np.linalg.inv(S) * gamma
         
         ############
         # END student code
