@@ -172,7 +172,7 @@ class Measurement:
             # TODO Step 4: initialize camera measurement including z and R 
             ############
 
-            self.z = np.zeros((sensor.dim_meas, 2))
+            self.z = np.zeros((sensor.dim_meas, 1))
             self.z[0] = z[0]
             self.z[1] = z[1]
             sigma_cam_i = params.sigma_cam_i
