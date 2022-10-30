@@ -124,7 +124,7 @@ class Association:
             track = manager.track_list[ind_track]
             
             # check visibility, only update tracks in fov    
-            if not meas_list[0].sensor.in_fov(track.x):
+            if not meas_list[ind_meas].sensor.in_fov(track.x):
                 continue
             
             # Kalman update
