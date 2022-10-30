@@ -37,21 +37,15 @@ class Association:
         # - replace association_matrix with the actual association matrix based on Mahalanobis distance (see below) for all tracks and all measurements
         # - update list of unassigned measurements and unassigned tracks
         ############
-        
-        self.association_matrix = np.zeros((len(track_list), len(meas_list)))
-        for i in range(len(track_list)):
-            for j in range(len(meas_list)):
+        N = len(track_list)
+        M = len(meas_list)
+        self.unassigned_tracks = list(range(N))
+        self.unassigned_meas = list(range(M))
+
+        self.association_matrix = np.zeros((N, M))
+        for i in range(N):
+            for j in range(M):
                 self.association_matrix[i,j] = self.MHD(track_list[i], meas_list[j], KF)
-        # TODO(tetsui): Update here before submission
-        self.unassigned_tracks = [] # reset lists
-        self.unassigned_meas = []
-        
-        if len(meas_list) > 0:
-            self.unassigned_meas = [0]
-        if len(track_list) > 0:
-            self.unassigned_tracks = [0]
-        if len(meas_list) > 0 and len(track_list) > 0: 
-            self.association_matrix = np.matrix([[0]])
         
         ############
         # END student code
@@ -66,14 +60,24 @@ class Association:
         # - return this track and measurement
         ############
 
-        # the following only works for at most one track and one measurement
-        update_track = 0
-        update_meas = 0
-        
+        A = self.association_matrix
+        if np.min(A) == np.inf:
+            return np.nan, np.nan
+
+        ij_min = np.unravel_index(np.argmin(A, axis=None), A.shape)
+        track_idx = ij_min[0]
+        meas_idx = ij_min[1]
+
+        A = np.delete(A, track_idx, 0)
+        A = np.delete(A, meas_idx, 1)
+        self.association_matrix = A
+
+        update_track = self.unassigned_tracks[track_idx]
+        update_meas = self.unassigned_meas[meas_idx]
+
         # remove from list
         self.unassigned_tracks.remove(update_track) 
         self.unassigned_meas.remove(update_meas)
-        self.association_matrix = np.matrix([])
             
         ############
         # END student code
