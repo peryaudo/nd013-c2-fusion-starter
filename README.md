@@ -10,7 +10,7 @@ In step 3, I implemented association. I applied Mahalanobis distance and gating 
 
 In step 4, I implemented camera fusion. I implemented h(x) for camera measurements so that they can update the state of EKF. Also I implemented FoV so that tracks not visible from a certain censor because it's outside the field of view do not trigger track score updates. The positions of multiple vehicles were successfully tracked by using both camera and lidar. [RMSE plot](step4.png)
 
-The last step was most difficult part, because at first my implementation of gating in step 3 was incomplete, and that caused an unexpected result in step 4, but it was not easy to debug that issue.
+The last step was the most difficult part, because at first my implementation of gating in step 3 was incomplete, and that caused an unexpected result in step 4, but it was not easy to debug that issue.
 
 
 ### 2. Do you see any benefits in camera-lidar fusion compared to lidar-only tracking (in theory and in your concrete results)? 
