@@ -103,7 +103,6 @@ class Trackmanagement:
             # check visibility    
             if meas_list: # if not empty
                 if meas_list[0].sensor.in_fov(track.x):
-                    # TODO(tetsui): Will double check if this is correct before submission
                     track.score -= 1./params.window
 
         # delete old tracks   
