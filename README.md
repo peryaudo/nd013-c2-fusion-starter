@@ -2,13 +2,21 @@
 
 ### 1. Write a short recap of the four tracking steps and what you implemented there (filter, track management, association, camera fusion). Which results did you achieve? Which part of the project was most difficult for you to complete, and why?
 
-In step 1, I implemented Extended Kalman Filter. I implemented matrices used in Kalman Filter such as F, Q, and also implemented update and prediction. The position of a single vehicle was successfully tracked. [RMSE plot](step1.png)
+In step 1, I implemented Extended Kalman Filter. I implemented matrices used in Kalman Filter such as F, Q, and also implemented update and prediction. The position of a single vehicle was successfully tracked.
 
-In step 2, I implemented track management. I implemented track score update and track state update, so that a new vehicle will be recognized after a few frames and similarly a disappering vehicle will be dropped in a few frames. The track state and the score of a single vehicle were successfully updated. [RMSE plot](step2.png)
+![RMSE plot](step1.png)
 
-In step 3, I implemented association. I applied Mahalanobis distance and gating to associate measurements to tracks. The positions of multiple vehicles were successfully tracked. [RMSE plot](step3.png)
+In step 2, I implemented track management. I implemented track score update and track state update, so that a new vehicle will be recognized after a few frames and similarly a disappering vehicle will be dropped in a few frames. The track state and the score of a single vehicle were successfully updated.
 
-In step 4, I implemented camera fusion. I implemented h(x) for camera measurements so that they can update the state of EKF. Also I implemented FoV so that tracks not visible from a certain censor because it's outside the field of view do not trigger track score updates. The positions of multiple vehicles were successfully tracked by using both camera and lidar. [RMSE plot](step4.png)
+![RMSE plot](step2.png)
+
+In step 3, I implemented association. I applied Mahalanobis distance and gating to associate measurements to tracks. The positions of multiple vehicles were successfully tracked.
+
+![RMSE plot](step3.png)
+
+In step 4, I implemented camera fusion. I implemented h(x) for camera measurements so that they can update the state of EKF. Also I implemented FoV so that tracks not visible from a certain censor because it's outside the field of view do not trigger track score updates. The positions of multiple vehicles were successfully tracked by using both camera and lidar.
+
+![RMSE plot](step4.png)
 
 The last step was the most difficult part, because at first my implementation of gating in step 3 was incomplete, and that caused an unexpected result in step 4, but it was not easy to debug that issue.
 
