@@ -36,14 +36,16 @@ class Track:
         # - initialize track state and track score with appropriate values
         ############
 
+        pos_sens = np.ones((4, 1))
+        pos_sens[0:3] = meas.z[0:3]
+        pos_veh = meas.sensor.sens_to_veh * pos_sens
         self.x = np.zeros((params.dim_state, 1))
-        print(self.x[0:3,0])
-        self.x[0:3,0:1] = M_rot * meas.z
+        self.x[0:3] = pos_veh[0:3]
         self.P = np.zeros((params.dim_state, params.dim_state))
         self.P[0:3,0:3] = M_rot * meas.R * M_rot.transpose()
-        self.P[3,3] = params.sigma_p44
-        self.P[4,4] = params.sigma_p55
-        self.P[5,5] = params.sigma_p66
+        self.P[3,3] = params.sigma_p44 ** 2
+        self.P[4,4] = params.sigma_p55 ** 2
+        self.P[5,5] = params.sigma_p66 ** 2
         self.state = 'initialized'
         self.score = 1./params.window
         
@@ -104,10 +106,12 @@ class Trackmanagement:
             if meas_list: # if not empty
                 if meas_list[0].sensor.in_fov(track.x):
                     track.score -= 1./params.window
+            if track.score <= 0.0:
+                track.score = 0.0
 
         # delete old tracks   
         for track in self.track_list.copy():
-            if track.score <= 0 or (track.state == 'confirmed' and track.score <= params.delete_threshold):
+            if track.score <= 0.05 or (track.state == 'confirmed' and track.score <= params.delete_threshold):
                 self.delete_track(track)
             elif track.P[0,0] > params.max_P or track.P[1,1] > params.max_P:
                 self.delete_track(track)
@@ -141,10 +145,11 @@ class Trackmanagement:
         # - set track state to 'tentative' or 'confirmed'
         ############
 
-        track.score = min(1., track.score + 1/params.window)
+        track.score += 1.0 / params.window
+        track.score = min(1.0, track.score)
         if track.score > params.confirmed_threshold:
             track.state = 'confirmed'
-        elif track.score > 1/params.window:
+        else:
             track.state = 'tentative'
         
         ############
