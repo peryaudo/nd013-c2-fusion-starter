@@ -20,7 +20,7 @@ In step 4, I implemented camera fusion. I implemented h(x) for camera measuremen
 
 The last step was the most difficult part, because at first my implementation of gating in step 3 was incomplete, and that caused an unexpected result in step 4, but it was not easy to debug that issue.
 
-Notes for resubmission: I fixed bugs in trackmanagement.py based on feedback and updated RMSE plots.
+Notes for resubmission (October 31): I fixed bugs in trackmanagement.py based on feedback and updated RMSE plots 2 to 4.
 
 
 ### 2. Do you see any benefits in camera-lidar fusion compared to lidar-only tracking (in theory and in your concrete results)? 
